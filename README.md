@@ -1,24 +1,14 @@
-# weather
+## Weather Vue
 
-## Project setup
+### Description
+Weather Vue enables you find out the current weather in a city around the world.
+
+### Project setup
 ```
 yarn install
 ```
-
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Technologies Used
+- [Vue](https://vuejs.org/) - JavaScript framework
+- [Open Weather Map API](https://openweathermap.org/api)
+- [Axios](https://www.npmjs.com/package/axios) - get data from api
+  
