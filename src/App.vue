@@ -7,11 +7,11 @@
       </div>
       <div class="weather-wrapper" v-if="typeof weatherResults.weather != 'undefined'">
         <div class="location-box">
-          <p class="location">
+          <h1 class="location">
             {{ weatherResults.name }},
             {{ weatherResults.sys.country }}
-          </p>
-          <p class="date">date goes here - 8/10/20</p>
+          </h1>
+          <h2 class="date">{{ createDate(weatherResults.dt) }}</h2>
         </div>
         <div class="weather-box">
           <div class="temp">
@@ -24,42 +24,54 @@
           </div>
         </div>
       </div>
+      <div class="weather-results-error" v-if="weatherResultsError != ''">
+        <h3>{{ weatherResultsError }}</h3>
+      </div>
     </main>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+
+// TODO find better solution to hiding API key from github
 import { API_KEY } from "../.env.local.js";
 
 export default {
   name: "App",
   data() {
     return {
-      base_url: "https://api.openweathermap.org/data/2.5/",
-      img_base_url: "http://openweathermap.org/img/wn/",
-      img_base_url_suffix: "@2x.png",
+      baseUrl: "https://api.openweathermap.org/data/2.5/",
+      imgBaseUrl: "http://openweathermap.org/img/wn/",
+      imgBaseUrlSuffix: "@2x.png",
       units: "imperial",
       query: "",
       weatherResults: {},
       backgroundImgClass: "",
+      weatherResultsError: "",
     };
   },
   methods: {
     getWeather() {
       axios
         .get(
-          `${this.base_url}weather?q=${this.query}&APPID=${API_KEY}&units=${this.units}`
+          `${this.baseUrl}weather?q=${this.query}&APPID=${API_KEY}&units=${this.units}`
         )
         .then((resp) => {
           this.weatherResults = resp.data;
           this.backgroundImgClass = this.weatherResults.weather[0].main;
-          console.log(this.weatherResults);
+          this.weatherResultsError = "";
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          this.weatherResults = "";
+          this.weatherResultsError =
+            "Oops! Sorry, we could not find the weather for that city.  Please try again.";
+          this.backgroundImgClass = "error";
+        });
     },
     createImgUrl(icon) {
-      return this.img_base_url + icon + this.img_base_url_suffix;
+      return this.imgBaseUrl + icon + this.imgBaseUrlSuffix;
     },
     getBackgroundImgClass(conditions) {
       let className = "";
@@ -76,10 +88,18 @@ export default {
         case "Mist":
           className = "mist";
           break;
+        case "error":
+          className = "error";
+          break;
         default:
           return "";
       }
       return className;
+    },
+    createDate(unixTimestamp) {
+      const dateObject = new Date(unixTimestamp * 1000);
+      const dateFormat = dateObject.toLocaleString();
+      return dateFormat;
     },
   },
 };
@@ -98,7 +118,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background-image: url("./assets/images/lucie-marchant-np8j3ARZjdk-unsplash.jpg");
+  background-image: url("./assets/images/initial/joan-mesquida-kWJb_eJbZhc-unsplash.jpg");
   background-size: cover;
   background-position: top;
 }
@@ -117,6 +137,10 @@ export default {
 
 #app.mist {
   background-image: url("./assets/images/mist/panjinda-iIqiI5fyZKs-unsplash.jpg");
+}
+
+#app.error {
+  background-image: url("./assets/images/error/sarah-kilian-52jRtc2S_VE-unsplash.jpg");
 }
 
 main {
@@ -190,6 +214,11 @@ main {
   border-radius: 15px;
   font-size: 1.5rem;
   text-shadow: 1px 3px rgba(0, 0, 0, 0.25);
-  margin: ;
+  /* margin: ; */
+}
+
+.weather-results-error {
+  color: red;
+  text-shadow: 1px 2px rgba(0, 0, 0, 0.25);
 }
 </style>

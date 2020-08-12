@@ -5,7 +5,11 @@ node_modules
 # local env files
 .env.local
 .env.*.local
+<<<<<<< HEAD
 # .env.local.js
+=======
+.env.local.js
+>>>>>>> master
 
 # Log files
 npm-debug.log*
