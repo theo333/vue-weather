@@ -30,6 +30,7 @@
 
 <script>
 import axios from "axios";
+import { API_KEY } from "../.env.local.js";
 
 export default {
   name: "App",
@@ -48,7 +49,7 @@ export default {
     getWeather() {
       axios
         .get(
-          `${this.base_url}weather?q=${this.query}&APPID=${process.env.VUE_APP_API_KEY}&units=${this.units}`
+          `${this.base_url}weather?q=${this.query}&APPID=${API_KEY}&units=${this.units}`
         )
         .then((resp) => {
           this.weatherResults = resp.data;
