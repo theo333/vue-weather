@@ -55,7 +55,8 @@ export default {
           this.weatherResults = resp.data;
           this.backgroundImgClass = this.weatherResults.weather[0].main;
           console.log(this.weatherResults);
-        });
+        })
+        .catch((err) => console.error(err));
     },
     createImgUrl(icon) {
       return this.img_base_url + icon + this.img_base_url_suffix;
