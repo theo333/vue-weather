@@ -3,7 +3,11 @@
 ![](src/assets/images/tampa.png)
 
 ### Description
-Weather Vue enables you find out the current weather in a city around the world.
+Weather Vue enables you find out the current weather in a city around the world. It displays the local time, temperature and conditions. The background image changes to reflect the current conditions.
+
+### Demo
+
+![](src/assets/images/../weather-vue-demo.gif)
 
 ### Project setup
 ```
@@ -15,6 +19,5 @@ yarn install
 - [Axios](https://www.npmjs.com/package/axios) - get data from api
   
 ### Improvements
-- Set time to weather location, rather than local time.
 - Display images based on time of day (day/night) and all weather types.
 - Display random images from an array of images for each weather type.
