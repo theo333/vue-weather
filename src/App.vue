@@ -1,5 +1,5 @@
 <template>
-  <div id="app" v-bind:class="getBackgroundImgClass(this.backgroundImgClass)">
+  <div id="app" v-bind:class="createBackgroundImgClass(this.backgroundImgClass)">
     <main>
       <div class="search-box">
         <input type="text" class="search-input" placeholder="Enter city name..." v-model="query" />
@@ -11,7 +11,7 @@
             {{ weatherResults.name }},
             {{ weatherResults.sys.country }}
           </h1>
-          <h2 class="date">{{ createDate(weatherResults.dt) }}</h2>
+          <h2 class="date">{{ createDate(weatherResults.dt, weatherResults.timezone) }}</h2>
         </div>
         <div class="weather-box">
           <div class="temp">
@@ -24,8 +24,15 @@
           </div>
         </div>
       </div>
-      <div class="weather-results-error" v-if="weatherResultsError != ''">
-        <h3>{{ weatherResultsError }}</h3>
+      <div class="weather-results-error" v-if="weatherResultsError == true">
+        <h3>
+          Oops!
+          <br />Sorry, we could not find
+          <br />the weather for
+          <br />
+          <span class="weather-results-error-query">"{{ query }}".</span>
+          <br />Please try again.
+        </h3>
       </div>
     </main>
   </div>
@@ -48,7 +55,7 @@ export default {
       query: "",
       weatherResults: {},
       backgroundImgClass: "",
-      weatherResultsError: "",
+      weatherResultsError: false,
     };
   },
   methods: {
@@ -61,44 +68,26 @@ export default {
           this.weatherResults = resp.data;
           this.backgroundImgClass = this.weatherResults.weather[0].main;
           this.weatherResultsError = "";
+          console.log(this.weatherResults);
         })
         .catch((err) => {
           console.error(err);
           this.weatherResults = "";
-          this.weatherResultsError =
-            "Oops! Sorry, we could not find the weather for that city.  Please try again.";
+          this.weatherResultsError = true;
           this.backgroundImgClass = "error";
         });
     },
     createImgUrl(icon) {
       return this.imgBaseUrl + icon + this.imgBaseUrlSuffix;
     },
-    getBackgroundImgClass(conditions) {
-      let className = "";
-      switch (conditions) {
-        case "Clear":
-          className = "sunny";
-          break;
-        case "Clouds":
-          className = "cloudy";
-          break;
-        case "Rain":
-          className = "rainy";
-          break;
-        case "Mist":
-          className = "mist";
-          break;
-        case "error":
-          className = "error";
-          break;
-        default:
-          return "";
-      }
-      return className;
+    createBackgroundImgClass(conditions) {
+      return conditions.toLowerCase();
     },
-    createDate(unixTimestamp) {
-      const dateObject = new Date(unixTimestamp * 1000);
-      const dateFormat = dateObject.toLocaleString();
+    createDate(unixTimestamp, queryTimeZone) {
+      const dateObject = new Date((unixTimestamp + queryTimeZone) * 1000);
+      const dateFormat = dateObject.toLocaleString("en-US", {
+        timeZone: "UTC",
+      });
       return dateFormat;
     },
   },
@@ -123,20 +112,32 @@ export default {
   background-position: top;
 }
 
-#app.sunny {
+#app.clear {
   background-image: url("./assets/images/sunny/kilarov-zaneit-OzRhGl0BsWU-unsplash.jpg");
 }
 
-#app.cloudy {
+#app.clouds {
   background-image: url("./assets/images/cloudy/fabrizio-conti-AtHvihIObKo-unsplash.jpg");
 }
 
-#app.rainy {
-  background-image: url("./assets/images/rainy/neonbrand-TtlSPDneJgM-unsplash.jpg");
+#app.haze {
+  background-image: url("./assets/images/haze/dave-hoefler-nyhI63n7vpQ-unsplash.jpg");
 }
 
 #app.mist {
   background-image: url("./assets/images/mist/panjinda-iIqiI5fyZKs-unsplash.jpg");
+}
+
+#app.drizzle {
+  background-image: url("./assets/images/drizzle/philippe-tarbouriech-rWwj4zcOcIs-unsplash.jpg");
+}
+
+#app.rain {
+  background-image: url("./assets/images/rainy/neonbrand-TtlSPDneJgM-unsplash.jpg");
+}
+
+#app.thunderstorm {
+  background-image: url("./assets/images/thunderstorm/dave-hoefler-llEjCH71E9o-unsplash.jpg");
 }
 
 #app.error {
@@ -191,7 +192,6 @@ main {
 
 .weather-box {
   display: inline-block;
-  /* background-color: rgba(0, 0, 0, 0.25); */
 }
 
 .weather-box .temp,
@@ -210,15 +210,17 @@ main {
 }
 
 .weather-box .conditions {
-  /* background-color: rgba(255, 255, 255, 0.35); */
   border-radius: 15px;
   font-size: 1.5rem;
   text-shadow: 1px 3px rgba(0, 0, 0, 0.25);
-  /* margin: ; */
 }
 
 .weather-results-error {
   color: red;
   text-shadow: 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.weather-results-error-query {
+  color: yellow;
 }
 </style>
